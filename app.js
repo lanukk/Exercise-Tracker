@@ -1,25 +1,44 @@
-const express = require("express");
+const express = require('express');
+const mongoose = require('mongoose');
 const app = express();
-const connectDB = require("./config/db");
-require("dotenv").config();
+const datastore = require('./config/datastores').datastores;
 
-app.use(express.static("public"));
+const port = require('./config/custom').port;
 
-const port = process.env.PORT || 3000;
+app.use(express.json({
+  type: ['application/json', 'text/plain']
+}));
 
-app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/views/index.html");
-});
+try {
+  mongoose.connect(datastore.mongodb.URI)
+    .then(() => console.log('Connected to DB'))
+    .catch((err) => console.log(err))
+} catch(err) {
+  console.log("err ::" + err);
+}
 
-//Connecting DB
-connectDB();
+app.listen(port);
+app.use('/', require('./config/routes.js'));
 
-//Body parser
-app.use(express.urlencoded({ extended: true }));
+// const connectDB = require("./config/db");
+// require("dotenv").config();
 
-//routing
-app.use("/api/users", require("./routes/users"));
+// app.use(express.static("public"));
 
-app.listen(port, () => {
-  console.log(`Server Up and Running on port ${port}`);
-});
+// const port = process.env.PORT || 3000;
+
+// app.get("/", (req, res) => {
+//   res.sendFile(__dirname + "/views/index.html");
+// });
+
+// //Connecting DB
+// connectDB();
+
+// //Body parser
+
+// //routing
+// app.use("/api/users", require("./routes/users"));
+
+// app.listen(port, () => {
+//   console.log(`Server Up and Running on port ${port}`);
+// });
