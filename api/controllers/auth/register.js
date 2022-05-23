@@ -3,6 +3,7 @@ const validator = require('validator');
 const uuid = require('uuid');
 const bcrypt = require('bcryptjs');
 const User = require('../../models/User');
+const ExerciseDetails = require('../../models/ExerciseDetails');
 
 module.exports = {
     fn: async function(req, res){
@@ -64,6 +65,13 @@ module.exports = {
             
             console.log('User saved successfully')
             console.log(savedUser);
+
+            const exerciseDetails = new ExerciseDetails({
+                user_name: data.user_name,
+                user_id
+            });
+
+            await exerciseDetails.save();
 
             return res.status(200).send({
                 'success': true,

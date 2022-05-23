@@ -2,6 +2,7 @@ const _ = require('lodash');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
 const User = require('../../models/User');
+const jwt = require('../../helpers/jwt/sign')
 
 module.exports = {
     fn: async function(req, res){
@@ -34,6 +35,10 @@ module.exports = {
                 email: data.email
             });
 
+            if(_.isUndefined(user)){
+                throw "User not found";
+            }
+
             const hash = bcrypt.hashSync(data.password, user.salt);
 
             if(hash != user.password_hash){
@@ -43,9 +48,23 @@ module.exports = {
                 });
             }
 
+            const payload = {
+                sub : user.user_id,
+                iss : 'exercise-tracker'
+            };
+
+            let token = await jwt.fn(req, res, payload);
+
+            console.log('token: ');
+            console.log(token);
+
+            res.cookie('exercise-tracker', token);
+
             return res.status(200).send({
                 'success': true,
-                'data': 'Successful'
+                'data': {
+                    'jwt': token
+                }
             });
 
         } catch(err) {

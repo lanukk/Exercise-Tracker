@@ -18,13 +18,13 @@
   "homepage": "https://github.com/lanukk/Exercise-Tracker#readme",
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.6",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.21",
     "mongoose": "^6.0.12",
-    "sails-mongo": "^2.0.0",
     "uuid": "^8.3.2",
-    "validator": "^13.7.0",
-    "waterline": "^0.15.0"
+    "validator": "^13.7.0"
   }
 }
