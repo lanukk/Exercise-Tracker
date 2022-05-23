@@ -1,25 +1,24 @@
-const express = require("express");
+const express = require('express');
+const mongoose = require('mongoose');
+const cookieParser = require('cookie-parser');
 const app = express();
-const connectDB = require("./config/db");
-require("dotenv").config();
+const datastore = require('./config/datastores').datastores;
 
-app.use(express.static("public"));
+const port = require('./config/custom').port;
 
-const port = process.env.PORT || 3000;
+app.use(express.json({
+  type: ['application/json', 'text/plain']
+}));
 
-app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/views/index.html");
-});
+app.use(cookieParser());
 
-//Connecting DB
-connectDB();
+try {
+  mongoose.connect(datastore.mongodb.URI)
+    .then(() => console.log('Connected to DB'))
+    .catch((err) => console.log(err))
+} catch(err) {
+  console.log("err ::" + err);
+}
 
-//Body parser
-app.use(express.urlencoded({ extended: true }));
-
-//routing
-app.use("/api/users", require("./routes/users"));
-
-app.listen(port, () => {
-  console.log(`Server Up and Running on port ${port}`);
-});
+app.listen(port);
+app.use('/', require('./config/routes.js'));
