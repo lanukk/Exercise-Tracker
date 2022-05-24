@@ -13,7 +13,7 @@ router.get('/health-check', async (req, res) => {
 
         console.log(req.body);
 
-        controller.fn(req, res);
+        await controller.fn(req, res);
     } catch(err) {
         console.log(err);
         return res.status(400).send(err)
@@ -28,7 +28,7 @@ router.post('/login', async (req, res) => {
 
         console.log(req.body);
 
-        controller.fn(req, res);
+        await controller.fn(req, res);
     } catch(err) {
         console.log(err);
         return res.status(400).send(err);
@@ -39,11 +39,11 @@ router.post('/login', async (req, res) => {
 router.post('/register', async (req, res) => {
 
     try{
-    const controller = require(controllerPath + '/auth/register');
+        const controller = require(controllerPath + '/auth/register');
 
-    console.log(req.body);
+        console.log(req.body);
 
-    controller.fn(req, res);
+        await controller.fn(req, res);
     } catch(err) {
         console.log(err);
         return res.status(400).send(err);
@@ -66,7 +66,7 @@ router.post('/add', async (req, res) => {
 
         console.log(req.body);
 
-        controller.fn(req, res);
+        await controller.fn(req, res);
     } catch(err) {
         console.log(err);
         return res.status(400).send(err);
@@ -88,7 +88,28 @@ router.get('/fetch', async (req, res) => {
 
         console.log(req.body);
 
-        controller.fn(req, res);
+        await controller.fn(req, res);
+    } catch(err) {
+        console.log(err);
+        return res.status(400).send(err);
+    }
+    
+});
+
+router.get('/logout', async (req, res) => {
+
+    try{
+        const policy = require(policyPath + '/user-authorization');
+
+        await policy.fn(req, res);
+
+        const controller = require(controllerPath + '/logout');
+
+        console.log(req.body);
+
+        console.log(res);
+
+        await controller.fn(req, res);
     } catch(err) {
         console.log(err);
         return res.status(400).send(err);
