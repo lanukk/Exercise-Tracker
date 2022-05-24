@@ -15,8 +15,8 @@ module.exports = {
         const decodedToken = await jwt.fn(req, res, req.cookies['exercise-tracker']);
         console.log('decodedToken');
         console.log(decodedToken);
-        const email = decodedToken.sub;
-        return email;
+        const user_id = decodedToken.sub;
+        return user_id;
         
     } catch (err) {
         console.log(err);
