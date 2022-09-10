@@ -1,16 +1,26 @@
+//requiring packages
 const express = require('express');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
-const app = express();
-const datastore = require('./config/datastores').datastores;
+const moment = require('moment');
 
+//requiring server related configs
+const datastore = require('./config/datastores').datastores;
 const port = require('./config/custom').port;
 
+const app = express();
+
+//setting middlewares
 app.use(express.json({
   type: ['application/json', 'text/plain']
 }));
 
 app.use(cookieParser());
+
+app.use('/', (req, res, next)=>{
+  console.log(moment().format('MMMM Do YYYY, h:mm:ss a'));
+  next();
+});
 
 try {
   mongoose.connect(datastore.mongodb.URI)

@@ -8,6 +8,9 @@ const ExerciseDetails = require('../../models/ExerciseDetails');
 module.exports = {
     fn: async function(req, res){
 
+        console.log('auth/register :: Payload ::');
+        console.log(req.body);
+
         const data = req.body;
         let error = [];
 

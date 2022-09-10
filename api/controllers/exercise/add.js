@@ -1,8 +1,12 @@
 const _ = require('lodash');
+const jwt = require('../../helpers/jwt/verify');
 const ExerciseDetails = require('../../models/ExerciseDetails');
 
 module.exports = {
     fn: async function(req, res){
+
+        console.log('exercise/add :: Payload');
+        console.log(req.body);
 
         const data = req.body;
         let error = [];
@@ -24,8 +28,13 @@ module.exports = {
 
         try {
 
+            const decodedToken = await jwt.fn(req, res, req.cookies['exercise-tracker']);
+            console.log('decodedToken');
+            console.log(decodedToken);
+            const user_id = decodedToken.sub;
+
             const exerciseDetails = await ExerciseDetails.findOne({
-                user_id: data.user_id
+                user_id
             });
 
             exerciseDetails.exercise.push({
@@ -35,7 +44,7 @@ module.exports = {
 
             await ExerciseDetails.updateOne(
                 {
-                    user_id: data.user_id
+                    user_id
                 }, {
                     $set: {'exercise': exerciseDetails.exercise}
                 }
