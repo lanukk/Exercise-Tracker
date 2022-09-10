@@ -1,12 +1,17 @@
 const ExerciseDetails = require('../../models/ExerciseDetails');
+const jwt = require('../../helpers/jwt/verify');
 const _ = require('lodash');
 module.exports = {
     fn: async function(req, res){
-        const data = req.body;
-
         try {
+
+            const decodedToken = await jwt.fn(req, res, req.cookies['exercise-tracker']);
+            console.log('decodedToken');
+            console.log(decodedToken);
+            const user_id = decodedToken.sub;
+
             const exerciseDetails = await ExerciseDetails.findOne({
-                user_id: data.user_id
+                user_id
             });
 
             if(_.isUndefined(exerciseDetails)){

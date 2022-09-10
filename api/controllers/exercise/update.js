@@ -5,7 +5,7 @@ const ExerciseDetails = require('../../models/ExerciseDetails');
 module.exports = {
     fn: async function(req, res){
 
-        console.log('exercise/add :: Payload');
+        console.log('exercise/update :: Payload');
         console.log(req.body);
 
         const data = req.body;
@@ -37,26 +37,23 @@ module.exports = {
                 user_id
             });
 
-            let duplicate = false;
+            let found = -1;
 
-            exerciseDetails.exercise.forEach((item) => {
+            exerciseDetails.exercise.forEach((item, indx) => {
                 if(item.name.toLowerCase() == data.exercise_name.toLowerCase()){
-                    duplicate = true;
+                    found = indx;
                 }
             });
 
-            if(duplicate){
-                console.log('Duplicate');
+            if(found === -1){
+                console.log('Exercise Not Found!');
                 return res.status(400).send({
                     'success': false,
-                    'errors': ['Exercise already exists.']
+                    'errors': ['Exercise Not Found!']
                 });
             }
 
-            exerciseDetails.exercise.push({
-                'name': data.exercise_name,
-                'week': data.week
-            });
+            exerciseDetails.exercise[found].week = data.week;
 
             await ExerciseDetails.updateOne(
                 {
@@ -64,9 +61,9 @@ module.exports = {
                 }, {
                     $set: {'exercise': exerciseDetails.exercise}
                 }
-            )
+            );
 
-            console.log('Exercise Added');
+            console.log('Exercise Updated');
 
             return res.status(200).send({
                 'success': true,

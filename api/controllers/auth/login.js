@@ -7,6 +7,9 @@ const jwt = require('../../helpers/jwt/sign')
 module.exports = {
     fn: async function(req, res){
 
+        console.log('auth/login :: Payload ::');
+        console.log(req.body);
+
         const data = req.body;
         let error = [];
 
@@ -42,6 +45,7 @@ module.exports = {
             const hash = bcrypt.hashSync(data.password, user.salt);
 
             if(hash != user.password_hash){
+                console.log('Password does not match. Please try again.')
                 return res.status(401).send({
                     'success': false,
                     'errors': ['Unauthorized']

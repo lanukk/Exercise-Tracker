@@ -2,119 +2,43 @@ const express = require('express');
 const router = express.Router();
 
 
+const policyPath = '../api/policies';
+
+console.log('Setting up policies');
+const appliedPolicy = {
+    '/add' : ['/user-authorization'],
+    '/fetch' : ['/user-authorization'],
+    '/logout' : ['/user-authorization'],
+    '/update' : ['/user-authorization']
+};
+
+for(const path in appliedPolicy){
+    console.log(path)
+    console.log(appliedPolicy[path]);
+    appliedPolicy[path].forEach((item)=>{
+        router.use(path, require(policyPath + item).fn);
+    });
+}
+
 const controllerPath = '../api/controllers';
-const policyPath = '../api/policies'
 
+const controllers = [
+    '/health-check GET /health-check',
+    '/login POST /auth/login',
+    '/register POST /auth/register',
+    '/add PUT /exercise/add',
+    '/fetch GET /exercise/fetch',
+    '/logout GET /logout',
+    '/users GET /users',
+    '/update PUT /exercise/update'
+];
 
-router.get('/health-check', async (req, res) => {
+console.log('Setting up routes');
 
-    try{
-        const controller = require(controllerPath + '/health-check');
-
-        console.log(req.body);
-
-        await controller.fn(req, res);
-    } catch(err) {
-        console.log(err);
-        return res.status(400).send(err)
-    }
-    
-});
-
-router.post('/login', async (req, res) => {
-
-    try{
-        const controller = require(controllerPath + '/auth/login');
-
-        console.log(req.body);
-
-        await controller.fn(req, res);
-    } catch(err) {
-        console.log(err);
-        return res.status(400).send(err);
-    }
-    
-});
-
-router.post('/register', async (req, res) => {
-
-    try{
-        const controller = require(controllerPath + '/auth/register');
-
-        console.log(req.body);
-
-        await controller.fn(req, res);
-    } catch(err) {
-        console.log(err);
-        return res.status(400).send(err);
-    }
-    
-});
-
-
-router.post('/add', async (req, res) => {
-
-    try{
-        const policy = require(policyPath + '/user-authorization');
-
-        const user_id = await policy.fn(req, res);
-
-        console.log(user_id);
-        req.body.user_id = user_id;
-
-        const controller = require(controllerPath + '/exercise/add');
-
-        console.log(req.body);
-
-        await controller.fn(req, res);
-    } catch(err) {
-        console.log(err);
-        return res.status(400).send(err);
-    }
-    
-});
-
-router.get('/fetch', async (req, res) => {
-
-    try{
-        const policy = require(policyPath + '/user-authorization');
-
-        const user_id = await policy.fn(req, res);
-
-        console.log(user_id);
-        req.body.user_id = user_id;
-
-        const controller = require(controllerPath + '/exercise/fetch');
-
-        console.log(req.body);
-
-        await controller.fn(req, res);
-    } catch(err) {
-        console.log(err);
-        return res.status(400).send(err);
-    }
-    
-});
-
-router.get('/logout', async (req, res) => {
-
-    try{
-        const policy = require(policyPath + '/user-authorization');
-
-        await policy.fn(req, res);
-
-        const controller = require(controllerPath + '/logout');
-
-        console.log(req.body);
-
-        console.log(res);
-
-        await controller.fn(req, res);
-    } catch(err) {
-        console.log(err);
-        return res.status(400).send(err);
-    }
-    
+controllers.forEach((item) => {
+    const info = item.split(' ');
+    console.log(info);
+    router[info[1].toLowerCase()](info[0], require(controllerPath + info[2]).fn);
 });
 
 module.exports = router;
